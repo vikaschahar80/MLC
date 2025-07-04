@@ -11,6 +11,7 @@ export function SearchWithMic() {
   const [micOpen, setMicOpen] = useState(false)
   const [searchText, setSearchText] = useState("")
   const navigate = useNavigate()
+  const [newtext,setnewText] = useState(searchText);
 
   const handleVoiceResult = (text) => {
       
@@ -19,7 +20,7 @@ export function SearchWithMic() {
     console.log(lowerText);
 
     const match = lowerText.match(
-/(?:i\s+)?(?:want|need|would\s+like|wanna)?\sto\s(add|create|upload|remove|update|get|view|register)\s+(?:a|an|the)?\s*(student|teacher|user|course|record|details?)/i          );
+/(?:i\s+)?(?:want|need|would\s+like|wanna)?\sto\s(next|student|upgrade|promote|add|create|upload|remove|update|get|view|register|edit|insert|new|admit|modify|show)\s+(?:a|an|the)?\s*(student|teacher|user|course|record|details|reports|students|report?)/i          );
           console.log(match);
     if (!match) {
       console.warn("No regex match. Trying fallback intent match...");
@@ -50,14 +51,14 @@ export function SearchWithMic() {
     console.warn("Intent matched but URL not found.");
   }
   useEffect(() => {
-  if (searchText.trim() !== "") {
+  if (newtext.trim() !== "") {
     console.log("handle function called");
-    handleVoiceResult(searchText);
+    handleVoiceResult(newtext);
   }
   else{
     console.log("function not called")
   }
-}, [searchText]);
+}, [newtext]);
   
 
   return (
@@ -79,7 +80,7 @@ export function SearchWithMic() {
       <SpeechModal
         open={micOpen}
         onOpenChange={setMicOpen}
-        onResult={(text)=>setSearchText(text)}
+        onResult={(text)=>setnewText(text)}
       />
     </>
   )

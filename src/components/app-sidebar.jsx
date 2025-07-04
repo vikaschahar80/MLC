@@ -52,19 +52,19 @@ import {
       items: [
         {
           title: "Add Student",
-          url: "#Add",
+          url: "/add-student",
         },
         {
           title: "Edit Student",
-          url: "#Edit",
+          url: "/edit-student",
         },
         {
           title: "View reports",
-          url: "#View",
+          url: "/view-reports",
         },
         {
           title: "Promote Students",
-          url: "#Promote",
+          url: "/promote",
         },
       ],
     },

@@ -90,8 +90,15 @@ export function SpeechModal({ open, onOpenChange, onResult }) {
         <DialogHeader className="flex justify-center items-center">
           <DialogTitle>Voice Search</DialogTitle>
         </DialogHeader>
-
-        <div className="flex justify-center py-6">
+          <div >
+            {transcript && status === "result" && (
+          <div className="text-center  text-gray-800 mt-2 font-medium text-lg" >
+             {transcript}
+          </div>
+        )}
+          </div>
+        <div className="flex justify-center py-6 ">
+          
           <div className="w-48 h-48 rounded-full border-4 border-gray-300 flex items-center justify-center relative shadow-md">
             {status === "idle" && !error && (
               <button
@@ -107,6 +114,7 @@ export function SpeechModal({ open, onOpenChange, onResult }) {
                 <div className="text-sm text-gray-600">Listening...</div>
               </div>
             )}
+            
             {status === "result" && (
               
               <div className="flex justify-center items-center flex-col">
@@ -131,11 +139,7 @@ export function SpeechModal({ open, onOpenChange, onResult }) {
           </div>
         </div>
 
-        {transcript && status === "result" && (
-          <div className="text-center text-sm text-gray-800 mt-2 " >
-             {transcript}
-          </div>
-        )}
+        
         
         
 

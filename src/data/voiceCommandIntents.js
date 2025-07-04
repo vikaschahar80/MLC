@@ -5,7 +5,7 @@ export const voiceCommandIntents = [
     sub_modules: [
       {
         module: "add_student",
-        url: "#Add",
+        url: "/add-student",
         keywords: [
           "add student",
           "upload student",
@@ -17,7 +17,7 @@ export const voiceCommandIntents = [
       },
       {
         module: "edit_student",
-        url: "#Edit",
+        url: "/edit-student",
         keywords: [
           "edit student",
           "update student",
@@ -28,9 +28,10 @@ export const voiceCommandIntents = [
       },
       {
         module: "view_reports",
-        url: "#View",
+        url: "/view-reports",
         keywords: [
           "view reports",
+          "view report",
           "show reports",
           "student reports",
           "generate report",
@@ -39,9 +40,9 @@ export const voiceCommandIntents = [
       },
       {
         module: "promote_students",
-        url: "#Promote",
+        url: "/promote",
         keywords: [
-          "promote students",
+          "promote student",
           "upgrade class",
           "next class",
           "move students to next grade",
