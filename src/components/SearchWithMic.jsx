@@ -12,25 +12,28 @@ export function SearchWithMic() {
   const [searchText, setSearchText] = useState("")
   const navigate = useNavigate()
   const [newtext,setnewText] = useState(searchText);
+  const [unintent,setIntent] = useState("");
 
-  const handleVoiceResult = (text) => {
-      
-    const lowerText = text.toLowerCase();
+const handleVoiceResult = async (text) => {
+  const lowerText = text.toLowerCase();
+    setIntent("");
+  try {
+    const res = await fetch(`https://api.wit.ai/message?v=20240706&q=${encodeURIComponent(lowerText)}`, {
+      headers: {
+        Authorization: `Bearer KKZ5B2HIEMRUE2ZRVQMQUGBBRCJJQBLH`,
+      }
+    });
 
-    console.log(lowerText);
-
-    const match = lowerText.match(
-/(?:i\s+)?(?:want|need|would\s+like|wanna)?\sto\s(next|student|upgrade|promote|add|create|upload|remove|update|get|view|register|edit|insert|new|admit|modify|show)\s+(?:a|an|the)?\s*(student|teacher|user|course|record|details|reports|students|report?)/i          );
-          console.log(match);
-    if (!match) {
-      console.warn("No regex match. Trying fallback intent match...");
-      return; // You can choose to skip or continue fallback here
+    const data = await res.json();
+    const intent = data.intents?.[0]?.name || "unknown";
+    console.log("Detected intent:", intent);
+    if(intent==="unknown"){
+      setIntent("Didn't understand that.")
+      return;
     }
+    
 
-    const [, action, target] = match;
-    const intent = `${action} ${target}`.toLowerCase();
-    console.log(intent);
-    // ✅ Step 2: Use keyword match from voiceCommandIntents
+    // Match with voiceCommandIntents
     for (const mainModule of voiceCommandIntents) {
       for (const subModule of mainModule.sub_modules) {
         const matched = subModule.keywords.find((keyword) =>
@@ -38,24 +41,25 @@ export function SearchWithMic() {
         );
 
         if (matched) {
-          const matchedModuleUrl = subModule.url;
-          const mainModuleKey = mainModule.module;
-
-          navigate(matchedModuleUrl); 
+          navigate(subModule.url);
           return;
-
         }
       }
     }
 
-    console.warn("Intent matched but URL not found.");
+    console.warn("Url Not found for this Intent ");
+  } catch (error) {
+    console.error("API error:", error);
   }
+};
+
   useEffect(() => {
   if (newtext.trim() !== "") {
     console.log("handle function called");
     handleVoiceResult(newtext);
   }
   else{
+
     console.log("function not called")
   }
 }, [newtext]);
@@ -81,6 +85,8 @@ export function SearchWithMic() {
         open={micOpen}
         onOpenChange={setMicOpen}
         onResult={(text)=>setnewText(text)}
+        unintent = {unintent}
+        
       />
     </>
   )

@@ -10,14 +10,27 @@ import {
 import { Button } from "@/components/ui/button"
 
 
-export function SpeechModal({ open, onOpenChange, onResult }) {
+export function SpeechModal({ open, onOpenChange, onResult,unintent }) {
   const [status, setStatus] = useState("idle") // idle | listening | error | result
   const [error, setError] = useState("")
   const [transcript, setTranscript] = useState("")
   const recognitionRef = useRef(null)
 
   useEffect(() => {
-    if (!open) return
+    if (!open) {
+    
+      if (recognitionRef.current) {
+        recognitionRef.current.onend = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.stop();
+        recognitionRef.current = null;
+      }
+      setStatus("idle");
+      setTranscript("");
+      setError("");
+      return;
+    }
 
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition
@@ -38,42 +51,60 @@ export function SpeechModal({ open, onOpenChange, onResult }) {
       setStatus("listening")
       setTranscript("")
       setError("")
+      
     }
 
     recognition.onerror = (event) => {
-      setStatus("error")
         if (event.error === "not-allowed") {
-            setError("Please enable microphone permission in your browser settings.");
-        } else if (event.error === "no-speech") {
-            setError("No speech detected. Try again.");
-            setStatus("result")
-        } else {
-            setError(`Error occurred: ${event.error}`);
-        }
+        setError("Please enable microphone permission in your browser settings.");
+        setStatus("error");
+      } else if (event.error === "no-speech") {
+        setError("No speech detected. Try again.");
+        setStatus("result"); // Do NOT set to "error"
+      } else {
+        setError(`Error occurred: ${event.error}`);
+        setStatus("error");
+      }
       
     }
 
     recognition.onresult = (event) => {
-        const result = event.results[0][0].transcript
+      
+      const result = event.results[0][0].transcript
+
       setTranscript(result)
       setStatus("result")
-
       onResult(result) 
     }
 
     recognition.onend = () => {
-      if (status === "listening") setStatus("idle")
+    setStatus((prevStatus) => {
+      // Prevent overriding "result" state with "idle"
+      if (prevStatus === "listening") {
+        return "idle";
+      }
+      return prevStatus;
+    });
     }
 
-    return () => recognition.stop()
+    // Clean up on unmount or modal close
+  return () => {
+    recognition.onresult = null;
+    recognition.onerror = null;
+    recognition.onend = null;
+    recognition.stop();
+    recognitionRef.current = null;
+  };
   }, [open])
 
   const handleStart = () => {
     try {
-      recognitionRef.current && recognitionRef.current.start()
+      if (recognitionRef.current && status !== "listening") {
+        recognitionRef.current.start();
+      }
     } catch (err) {
-      setStatus("error")
-      setError("Unable to start recognition.")
+      setStatus("error");
+      setError("Unable to start recognition.");
     }
   }
 
@@ -85,17 +116,34 @@ export function SpeechModal({ open, onOpenChange, onResult }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} onResult={onResult}>
+    <Dialog open={open} onOpenChange={(open) => {
+            if (!open && recognitionRef.current) {
+              recognitionRef.current.stop();
+              recognitionRef.current = null;
+              setStatus("idle");
+              setTranscript("");
+              setError("");
+            }
+            onOpenChange(open);
+          }} onResult={onResult}>
       <DialogContent>
         <DialogHeader className="flex justify-center items-center">
           <DialogTitle>Voice Search</DialogTitle>
         </DialogHeader>
-          <div >
+          <div className="flex justify-center flex-col items-center">
+            
             {transcript && status === "result" && (
-          <div className="text-center  text-gray-800 mt-2 font-medium text-lg" >
-             {transcript}
-          </div>
-        )}
+
+              <div className="text-center  text-gray-800 mt-2 font-medium text-lg" >
+                {transcript}
+              </div>
+              
+            )}
+            {unintent&& status==="result"&&(
+              <div className="text-red-600 text-sm " >
+                {unintent}
+              </div>
+            )}
           </div>
         <div className="flex justify-center py-6 ">
           
@@ -118,13 +166,11 @@ export function SpeechModal({ open, onOpenChange, onResult }) {
             {status === "result" && (
               
               <div className="flex justify-center items-center flex-col">
-                  <p className="text-red-500">
+                  <div className="text-red-500">
                     {error==="No speech detected. Try again." &&(
-                      <div>
-                        No speech Detected.
-                      </div>
+                        <p>No speech Detected.</p>
                     )}
-                  </p>
+                  </div>
                 <button
                 onClick={handleRestart}
                 className="text-lg font-semibold text-gray-700 hover:text-blue-600 px-3 py-1"
@@ -138,10 +184,6 @@ export function SpeechModal({ open, onOpenChange, onResult }) {
             )}
           </div>
         </div>
-
-        
-        
-        
 
         
       </DialogContent>
