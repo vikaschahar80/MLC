@@ -20,7 +20,7 @@ const handleVoiceResult = async (text) => {
   try {
     const res = await fetch(`https://api.wit.ai/message?v=20240706&q=${encodeURIComponent(lowerText)}`, {
       headers: {
-        Authorization: `Bearer KKZ5B2HIEMRUE2ZRVQMQUGBBRCJJQBLH`,
+        Authorization: `Bearer Enter Your server Token`,
       }
     });
 
