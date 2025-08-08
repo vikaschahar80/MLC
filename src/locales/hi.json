@@ -1,0 +1,114 @@
+{
+  "title": "School ERP चैटबॉट",
+  "close": "×",
+  "typing": "type कर रहा हूँ...",
+  "placeholder_default": "अपना message type करें...",
+  "placeholder_listening": "सुन रहा हूँ...",
+  "placeholder_action": "अपना जवाब type करें या 'cancel' लिखें...",
+  "send": "send",
+  "cancel": "Cancel",
+  "cancel_tooltip": "इस action को cancel करें",
+  "start_listening_tooltip": "Voice input शुरू करें",
+  "stop_listening_tooltip": "सुनना बंद करें",
+  "listening_indicator": "सुन रहा हूँ...",
+  "yes": "हाँ",
+  "no": "नहीं",
+  "error_invalid_yes_no": "❌ Please 'हाँ' या 'नहीं' में जवाब दें।",
+  "confirm_prompt": "Please confirm — क्या आप \"{{query}}\" के साथ proceed करना चाहते हैं?\n\n(हाँ / नहीं)",
+  "confirm_action_prompt": "क्या आप ये action करना चाहते हैं? (हाँ / नहीं)",
+  "action_cancelled": "🚫 Action cancel कर दिया है। अब मैं आपकी क्या help कर सकता हूँ?",
+  "error_speech_unsupported": "❌ इस browser में voice input support नहीं है।",
+  "error_speech_generic": "Voice सुनने में कुछ error आया।",
+  "error_mic_permission": "Browser settings में mic की permission allow करें।",
+  "error_no_speech": "कोई आवाज़ detect नहीं हुई। दुबारा try करें।",
+  "error_speech_aborted": "Voice सुनना बीच में बंद कर दिया गया।",
+  "error_mic_capture": "Mic मिला नहीं या चालू नहीं है।",
+  "error_listening_start": "❌ Listening start नहीं हो पाया",
+  "error_invalid_selection": "❌ गलत option चुना गया। फिर से try करें।",
+  "error_invalid_role": "❌ कृपया role बताएं: student, teacher या admin।",
+  "error_api_failed": "❌ Server से connect नहीं हो पाया। क्या आपका NLU server port 5005 पर चल रहा है?",
+  "error_auth_failed": "Login करने में error आया। फिर से login करें।",
+  "error_session_expired": "Session खत्म हो गया है। दुबारा login करें।",
+  "error_no_person_found": "❌ \"{{name}}\" नाम का कोई भी match नहीं मिला।",
+  "multiple_matches_found": "एक से ज़्यादा match मिले हैं। नीचे से select करें या number बोलें।",
+  "clarify_action_prompt": "आप \"{{name}}\" के साथ क्या करना चाहते हैं?",
+  "clarify_role_prompt": "\"{{name}}\" को {{action}} करने से पहले बताइए – student हैं, teacher या admin?",
+  "add_person_clarify_role_prompt": "\"{{name}}\" को जोड़ने के लिए, उनकी role बताएं: student, teacher या admin।",
+  "add_person_clarify_role_prompt_no_name": "नया person जोड़ने के लिए, उनकी role बताएं: student, teacher या admin।",
+  "selected_option_user_message": "आपने चुना: {{option}}",
+  "action_buttons": {
+    "details": "Details",
+    "add": "Add",
+    "edit": "Edit",
+    "block": "Block",
+    "promote": "Promote"
+  },
+  "role_buttons": {
+    "student": "Student",
+    "teacher": "Teacher",
+    "admin": "Admin"
+  },
+  
+  "edit_last_answer_tooltip": "अपना last answer edit करने के लिए click करें",
+  "edit_last": "edit",
+
+  "form": {
+    "step_label": "Step {{current}}/{{total}}: {{label}}",
+    "step_label_prefix": "Step ",
+    "add_student_success": "✅ Student successfully add किया गया:\n\n{{details}}",
+    "add_teacher_success": "✅ Teacher successfully add किया गया:\n\n{{details}}",
+    "add_admin_success": "✅ Admin successfully add किया गया:\n\n{{details}}",
+    "student": {
+      "name": "Student का पूरा नाम क्या है?",
+      "fatherName": "Father का नाम क्या है?",
+      "contact": "Contact number क्या है?",
+      "className": "कौन सी class में हैं?",
+      "section": "Section क्या है?",
+      "rollNumber": "Roll number क्या होगा?"
+    },
+    "teacher": {
+      "name": "Teacher का नाम क्या है?",
+      "subject": "Teacher कौन सा subject पढ़ाते हैं?",
+      "contact": "Contact number क्या है?",
+      "education": "Teacher की qualification क्या है?"
+    },
+    "admin": {
+      "name": "Admin का नाम क्या है?",
+      "department": "Admin किस department में हैं?",
+      "contact": "Contact number क्या है?"
+    },
+    "name_for_role": "{{role}} का नाम क्या है?"
+  },
+  "person_summary": {
+    "student": "👤 {{name}} | Role: {{role}} | Class: {{className}}, {{section}} | Roll No: {{rollNumber}}",
+    "teacher": "👤 {{name}} | Role: {{role}} | Subject: {{subject}} | Qualification: {{education}}",
+    "other": "👤 {{name}} | Role: {{role}} | Department: {{department}}"
+  },
+  "details_labels": {
+    "name": "नाम",
+    "fatherName": "पिता का नाम",
+    "contact": "Contact Number",
+    "className": "Class",
+    "section": "Section",
+    "rollNumber": "Roll Number",
+    "subject": "Subject",
+    "education": "Qualification",
+    "department": "Department",
+    "role": "Role"
+  },
+
+  "action_results": {
+   
+    "editing_started": "✏️ Editing शुरू कर दिया गया है।",
+   
+    "selection_details": "✅ आपने चुना: {{name}}. Details नीचे दिए गए हैं:\n\n{{details}}",
+    "selection_blocked": "✅ आपने चुना: {{name}}.\n\n🛑 Block कर दिया गया।",
+    "selection_editing": "✅ आपने चुना: {{name}}.\n\n✏️ Editing शुरू हुआ।",
+    "selection_generic": "✅ आपने चुना: {{name}}. Action complete (demo)।",
+    "details_here": "📋 पूरी details नीचे दी गई हैं:\n{{details}}",
+    "block": "✅ इस person को ब्लॉक कर दिया गया है:\n{{details}}",
+    "promote": "✅ इस person को प्रमोट कर दिया गया है:\n{{details}}",
+    "edited_with_details": "✅ बदलाव सेव हो गए हैं। नई details:\n{{details}}"
+  },
+  "multiple_roles_found": "हमें \"{{name}}\" नाम के लोग अलग-अलग roles में मिले। कृपया सही role बताएं।"
+}

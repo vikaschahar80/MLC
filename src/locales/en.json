@@ -1,0 +1,121 @@
+{
+  "title": "School ERP Chatbot",
+  "close": "×",
+  "typing": "Typing...",
+  "placeholder_default": "Type your message...",
+  "placeholder_listening": "Listening...",
+  "placeholder_action": "Type your response or 'cancel'...",
+  "send": "Send",
+  "cancel": "Cancel",
+  "cancel_tooltip": "Cancel current action",
+  "start_listening_tooltip": "Start Voice Input",
+  "stop_listening_tooltip": "Stop Listening",
+  "listening_indicator": "၊၊||၊ Listening...",
+  "yes": "Yes",
+  "no": "No",
+  "error_invalid_yes_no": "❌ Please reply with 'Yes' or 'No'.",
+  "confirm_prompt": "You want to proceed with: \"{{query}}\"?\n\n(Yes/No)",
+  "confirm_action_prompt": "Do you want to proceed with this action? (Yes/No)",
+  "action_cancelled": "🚫 Action cancelled. How can I help you now?",
+  "error_speech_unsupported": "❌ Speech recognition not supported in this browser.",
+  "error_speech_generic": "An error occurred during speech recognition.",
+  "error_mic_permission": "Please enable microphone permission in your browser settings.",
+  "error_no_speech": "No speech detected. Please try again.",
+  "error_speech_aborted": "Speech recognition was aborted.",
+  "error_mic_capture": "No microphone found or audio capture failed.",
+  "error_listening_start": "❌ Could not start listening.",
+  "error_invalid_selection": "❌ Invalid selection. Please try again.",
+  "error_invalid_role": "❌ Please reply with 'student', 'teacher', or 'admin'.",
+  "error_api_failed": "❌ API request failed. Is your local NLU server running on port 5005?",
+  "error_auth_failed": "Authentication error. Please log in again.",
+  "error_session_expired": "Session expired. Please log in.",
+  "error_no_person_found": "❌ No person found matching the criteria for \"{{name}}\".",
+  "multiple_matches_found": "Multiple matches found. Please select an option below by clicking, or by saying the number.",
+  "clarify_action_prompt": "What would you like to do with \"{{name}}\"?",
+  "clarify_role_prompt": "To {{action}} \"{{name}}\", are they a student, teacher, or admin?",
+  "add_person_clarify_role_prompt": "To add \"{{name}}\", please specify if they are a student, teacher, or admin.",
+  "add_person_clarify_role_prompt_no_name": "To add a new person, please specify if they are a student, teacher, or admin.",
+  "selected_option_user_message": "Selected option {{option}}",
+  "action_buttons": {
+    "details": "Details",
+    "add": "Add",
+    "edit": "Edit",
+    "block": "Block",
+    "promote": "Promote"
+  },
+  
+  
+  "edit_last": "Edit",
+  "edit_last_answer_tooltip": "Click to edit your previous answer",
+
+  "role_buttons": {
+    "student": "Student",
+    "teacher": "Teacher",
+    "admin": "Admin"
+  },
+  
+  "form": {
+    "review_details_prompt":"Are you want to proceed with this \n{{details}} \n\nClick edit button to change",
+    "which_field_to_edit":"Which information you want to change select",
+    "step_label": "Step {{current}} of {{total}}: {{label}}",
+    "step_label_prefix": "Step ",
+    "add_student_success": "✅ student added successfully:\n\n{{details}}",
+    "add_teacher_success": "✅ teacher added successfully:\n\n{{details}}",
+    "add_admin_success": "✅ admin added successfully:\n\n{{details}}",
+    "student": {
+      "name": "What is the student's full name?",
+      "fatherName": "What is student's Father name?",
+      "contact": "What is their contact number?",
+      "className": "Which class are they in?",
+      "section": "Which Section?",
+      "rollNumber": "What will be roll number?"
+    },
+    "teacher": {
+      "name": "What is the teacher's full name?",
+      "subject": "Which subject does the teacher handle?",
+      "contact": "Contact number of the teacher?",
+      "education": "What is teacher's Higher Education?"
+    },
+    "admin": {
+      "name": "What is the admin's name?",
+      "department": "Which department is the admin from?",
+      "contact": "Admin's contact number?"
+    },
+    "name_for_role": "What is the {{role}}'s name?"
+  },
+  "details_labels": {
+  "name": "Name",
+  "fatherName": "Father's Name",
+  "contact": "Contact Number",
+  "className": "Class",
+  "section": "Section",
+  "rollNumber": "Roll Number",
+  "subject": "Subject",
+  "education": "Qualification",
+  "department": "Department",
+  "role": "Role"
+},
+  "proceed_button":"Proceed",
+  "edit_button":"Edit",
+  "person_summary": {
+    "student": "👤 {{name}} | Role: {{role}} | Class: {{className}},{{section}} | Roll: {{rollNumber}}",
+    "teacher": "👤 {{name}} | Role: {{role}} | Subject: {{subject}} | Education: {{education}}",
+    "other": "👤 {{name}} | Role: {{role}} | Department: {{department}}"
+  },
+  "action_results": {
+   
+    "editing_started": "✏️ Editing started.",
+    
+    "details_here": "Here are the full details:\n\n{{details}}",
+    "selection_details": "✅ You selected: {{name}}. Here are the full details:\n\n{{details}}",
+    "selection_blocked": "✅ You selected: {{name}}.\n\n🛑 Blocked.",
+    "selection_editing": "✅ You selected: {{name}}.\n\n✏️ Editing started.",
+    "selection_generic": "✅ You selected: {{name}}. Action complete (demo).",
+   
+    "blocked": "✅ Blocked \n{{details}}.",
+    "promoted": "✅ Promoted \n{{details}}.",
+    "edited_with_details": "✅ Edited. Here are the details:\n{{details}}"
+  },
+  
+  "multiple_roles_found": "We found multiple people named \"{{name}}\" in different roles. Please specify which one:"
+}

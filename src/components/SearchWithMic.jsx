@@ -6,7 +6,7 @@ import { voiceCommandIntents } from "@/data/voiceCommandIntents"
 import { useNavigate } from "react-router-dom"
 
 import { sidebarData } from "@/components/app-sidebar"; 
-
+import { roles } from "@/data/Permissions"
 export function SearchWithMic() {
   const [micOpen, setMicOpen] = useState(false)
   const [searchText, setSearchText] = useState("")
@@ -14,40 +14,55 @@ export function SearchWithMic() {
   const [newtext,setnewText] = useState(searchText);
   const [unintent,setIntent] = useState("");
 
+  const userRole = "admin";
+
 const handleVoiceResult = async (text) => {
   const lowerText = text.toLowerCase();
     setIntent("");
+    const witApiKey = import.meta.env.VITE_WIT_AI_KEY;
   try {
-    const res = await fetch(`https://api.wit.ai/message?v=20240706&q=${encodeURIComponent(lowerText)}`, {
+    const res = await fetch(`https://api.wit.ai/message?v=20250712&q=${encodeURIComponent(lowerText)}`, {
       headers: {
-        Authorization: `Bearer Enter Your server Token`,
+
+        Authorization: `Bearer ${witApiKey}`,
+
+
       }
     });
 
     const data = await res.json();
-    const intent = data.intents?.[0]?.name || "unknown";
+    console.log(data)
+    const intent = data.intents?.[0]?.name || data;
+    
     console.log("Detected intent:", intent);
+
     if(intent==="unknown"){
       setIntent("Didn't understand that.")
       return;
     }
-    
 
-    // Match with voiceCommandIntents
     for (const mainModule of voiceCommandIntents) {
       for (const subModule of mainModule.sub_modules) {
-        const matched = subModule.keywords.find((keyword) =>
-          intent.includes(keyword)
-        );
+        for (const action of subModule.actions) {
+          const matched = action.keywords.find((keyword) =>
+            intent.includes(keyword)
+          );
 
-        if (matched) {
-          navigate(subModule.url);
-          return;
+          if (matched) {
+            const hasPermission = roles[userRole]?.includes(action.name);
+            console.log(subModule.url);
+            if (hasPermission) {
+              navigate(subModule.url);
+            } else {
+              setIntent("You don't have permission to access this action.");
+            }
+            return;
+          }
         }
       }
     }
 
-    console.warn("Url Not found for this Intent ");
+    setIntent("No matching action found.");
   } catch (error) {
     console.error("API error:", error);
   }
