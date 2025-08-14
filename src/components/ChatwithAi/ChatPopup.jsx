@@ -43,6 +43,25 @@ const parseNumberInput = (input) => {
   return NaN;
 };
 
+// ✨ NEW: Mock function to fetch teacher subjects asynchronously
+const fetchTeacherSubjects = () => {
+  return new Promise((resolve) => {
+    console.log("Fetching teacher subjects...");
+    setTimeout(() => {
+      const subjects = [
+        "Mathematics",
+        "Science",
+        "History",
+        "English",
+        "Physics",
+        "Chemistry",
+      ];
+      console.log("Fetched subjects:", subjects);
+      resolve(subjects);
+    }, 500); // Simulate a 0.5-second network delay
+  });
+};
+
 const ChatPopup = () => {
   const { user, token, logout } = useAuth();
   const { addStudent } = useContext(StudentContext);
@@ -70,6 +89,9 @@ const ChatPopup = () => {
 
   const [reviewMode, setReviewMode] = useState(false);
   const [fieldToEdit, setFieldToEdit] = useState(null);
+
+  // ✨ NEW: State for subject selection buttons
+  const [subjectOptions, setSubjectOptions] = useState([]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -234,6 +256,7 @@ const ChatPopup = () => {
     }
   };
 
+  // ✨ MODIFIED: Reset all modes including the new subject options state
   const resetAllModes = () => {
     stopListening();
     setLoading(false);
@@ -248,6 +271,7 @@ const ChatPopup = () => {
     setError("");
     setReviewMode(false);
     setFieldToEdit(null);
+    setSubjectOptions([]); // Clear subject buttons on any cancellation
   };
 
   const handleCancelAction = (options = {}) => {
@@ -259,27 +283,20 @@ const ChatPopup = () => {
   };
 
   const handleEditPreviousAnswerClick = (messageIndex = null) => {
-    // Ensure we are in a form-filling state
     if (!pendingActionToConfirm) return;
 
     const { parameters, missingFields, totalSteps } = pendingActionToConfirm;
     const allFields = getFormFieldsForRole(parameters.role);
 
-    // Find which fields have already been answered
     const answeredFieldKeys = allFields
       .map((f) => f.key)
       .filter((key) => parameters[key] !== undefined);
 
-    // If no answers have been given yet, there's nothing to edit
     if (answeredFieldKeys.length === 0) return;
 
-    // Determine which field to edit based on message index or default to last
     let fieldKeyToEdit;
 
     if (messageIndex !== null) {
-      // Find the field corresponding to this message
-      // This is a simplified approach - you might need to enhance this logic
-      // based on your specific form flow
       const userMessages = messages
         .filter((m) => m.role === "user")
         .slice(-answeredFieldKeys.length);
@@ -301,29 +318,26 @@ const ChatPopup = () => {
         fieldKeyToEdit = answeredFieldKeys[answeredFieldKeys.length - 1];
       }
     } else {
-      // Default to last answered field
       fieldKeyToEdit = answeredFieldKeys[answeredFieldKeys.length - 1];
     }
 
     const fieldToRewindTo = allFields.find((f) => f.key === fieldKeyToEdit);
     if (!fieldToRewindTo) return;
 
-    // Create a new parameters object and remove the value we want to edit
     const updatedParameters = { ...parameters };
     delete updatedParameters[fieldToRewindTo.key];
 
-    // Calculate how many messages to remove
     const fieldIndex = answeredFieldKeys.indexOf(fieldKeyToEdit);
-    const messagesToRemove = (answeredFieldKeys.length - fieldIndex) * 2; // Each field has user + assistant message
+    const messagesToRemove = (answeredFieldKeys.length - fieldIndex) * 2;
 
-    // Remove the relevant messages from the UI
     setMessages((prev) => prev.slice(0, -messagesToRemove));
 
-    // Rewind the form state
     const currentMissingFields = missingFields || [];
     const fieldsToReAdd = allFields.filter((f) =>
       answeredFieldKeys.slice(fieldIndex).includes(f.key)
     );
+
+    setSubjectOptions([]); // Clear subject buttons when editing
 
     setPendingActionToConfirm((prev) => ({
       ...prev,
@@ -331,7 +345,6 @@ const ChatPopup = () => {
       missingFields: fieldsToReAdd.concat(currentMissingFields),
     }));
 
-    // Re-ask the question for the field the user wants to edit
     const stepNumber = fieldIndex + 1;
     addAssistantMessage("form.step_label", {
       current: stepNumber,
@@ -520,6 +533,14 @@ const ChatPopup = () => {
     handleCancelAction({ fromButtonClick: true });
   };
 
+  // ✨ NEW: Handler for subject button clicks
+  const handleSubjectSelect = async (subject) => {
+    setMessages((prev) => [...prev, { role: "user", content: subject }]);
+    // Process the selected subject as if the user typed it
+    await processUserInput(subject, { fromButtonClick: true });
+  };
+
+  // ✨ MODIFIED: handleRoleSelect now checks if the first question is for a teacher's subject
   const handleRoleSelect = async (role) => {
     if (pendingActionToConfirm) {
       setMessages((prev) => [
@@ -551,11 +572,20 @@ const ChatPopup = () => {
       });
       setFormMode(null);
       if (requiredFields.length > 0) {
+        const firstField = requiredFields[0];
         addAssistantMessage("form.step_label", {
           current: 1,
           total: requiredFields.length,
-          label: requiredFields[0].label,
+          label: firstField.label,
         });
+
+        // If the very first question is about the subject, fetch options.
+        if (role === "teacher" && firstField.key === "subject") {
+          setLoading(true);
+          const subjects = await fetchTeacherSubjects();
+          setSubjectOptions(subjects);
+          setLoading(false);
+        }
       } else {
         await enterReviewMode(updatedParameters);
       }
@@ -680,6 +710,7 @@ const ChatPopup = () => {
       }
       if (!res.ok) throw new Error(`Server responded with ${res.status}`);
       const parsed = await res.json();
+      console.log(parsed);
       const { action, parameters } = parsed;
       if (action === "update_person_field") {
         await processFieldUpdate(parameters);
@@ -760,6 +791,7 @@ const ChatPopup = () => {
     }
   };
 
+  // ✨ MODIFIED: The main processUserInput function now contains the core logic for fetching and clearing subject options during form filling.
   const processUserInput = async (userInput, options = {}) => {
     window.speechSynthesis.cancel();
     const wasSpeechInput = !!options.fromSpeech;
@@ -886,37 +918,47 @@ const ChatPopup = () => {
       const nextField = pendingActionToConfirm.missingFields[0];
       const remainingFields = pendingActionToConfirm.missingFields.slice(1);
       const totalSteps = pendingActionToConfirm.totalSteps;
-
-      // This calculation gives the number of the step that was just completed.
       const completedStepNumber = totalSteps - remainingFields.length;
 
       const updatedParameters = {
         ...pendingActionToConfirm.parameters,
         [nextField.key]: trimmedInput,
       };
+
       setPendingActionToConfirm({
         ...pendingActionToConfirm,
         parameters: updatedParameters,
         missingFields: remainingFields,
       });
 
+      // Since a value was provided, clear any existing subject options
+      setSubjectOptions([]);
+
       if (remainingFields.length > 0) {
+        const nextFieldToAsk = remainingFields[0];
         addAssistantMessage(
           "form.step_label",
           {
-            // By adding 1, we get the correct number for the *next* step's prompt.
-            current: completedStepNumber + 1, // ✨ THIS IS THE FIX
+            current: completedStepNumber + 1,
             total: totalSteps,
-            label: remainingFields[0].label,
+            label: nextFieldToAsk.label,
           },
           wasSpeechInput
         );
+
+        // After asking the next question, check if it's for a teacher's subject
+        const role = updatedParameters.role;
+        if (role === "teacher" && nextFieldToAsk.key === "subject") {
+          const subjects = await fetchTeacherSubjects();
+          setSubjectOptions(subjects);
+        }
       } else {
         await enterReviewMode(updatedParameters, wasSpeechInput);
       }
       setLoading(false);
       return;
     }
+
     setPendingApiConfirmation(processedInput);
     addAssistantMessage("confirm_prompt", { query: trimmedInput });
     if (wasSpeechInput) speakText(t("confirm_prompt", { query: trimmedInput }));
@@ -928,7 +970,9 @@ const ChatPopup = () => {
     pendingApiConfirmation ||
     formMode ||
     selectMode ||
-    reviewMode;
+    reviewMode ||
+    (pendingActionToConfirm &&
+      pendingActionToConfirm.missingFields?.length > 0);
 
   return (
     <>
@@ -939,7 +983,7 @@ const ChatPopup = () => {
         💬
       </button>
       {isOpen && (
-        <div className="fixed bottom-20 right-6 w-90 h-[460px] bg-white shadow-2xl rounded-lg border flex flex-col z-50">
+        <div className="fixed bottom-20 right-6 w-110 h-[460px] bg-white shadow-2xl rounded-lg border flex flex-col z-50">
           <div className="bg-blue-600 text-white px-4 py-2 rounded-t-lg flex justify-between items-center">
             <span className="font-bold">{t("title")}</span>
             <div className="flex items-center gap-2">
@@ -979,13 +1023,11 @@ const ChatPopup = () => {
                 const isLastUserMessageInFormFill =
                   m.role === "user" && isFormActive && isNextMessageAFormStep;
 
-                // NEW: Check if this is the most recent user message in an active form
                 const isCurrentFormStep =
                   isFormActive &&
                   i === messages.length - 1 &&
                   m.role === "user";
 
-                // NEW: Also show edit button for the second-to-last user message if we're in form mode
                 const isPreviousFormStep =
                   isFormActive &&
                   i === messages.length - 3 &&
@@ -1025,6 +1067,21 @@ const ChatPopup = () => {
                 );
               })}
             {loading && <p className="text-sm text-gray-500">{t("typing")}</p>}
+
+            {/* ✨ NEW: Render subject selection buttons */}
+            {subjectOptions.length > 0 && !loading && (
+              <div className="flex flex-wrap justify-center gap-2 mt-2">
+                {subjectOptions.map((subject) => (
+                  <button
+                    key={subject}
+                    onClick={() => handleSubjectSelect(subject)}
+                    className="bg-purple-500 text-white px-3 py-1 rounded-md hover:bg-purple-600 text-sm"
+                  >
+                    {subject}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {selectMode && !loading && (
               <div className="space-y-2 self-start mr-auto w-full">
@@ -1131,7 +1188,6 @@ const ChatPopup = () => {
             )}
           </div>
           <div className="p-2 border-t flex gap-1 items-center">
-            {/* Existing input field */}
             <input
               type="text"
               className="flex-1 border px-2 py-1 rounded text-sm"
@@ -1145,11 +1201,9 @@ const ChatPopup = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              disabled={isListening}
+              disabled={isListening || loading}
             />
 
-            {/* NEW: Add edit last answer button in form mode */}
-            {/* ✨ THIS IS THE FIX: Check length to hide button when form is done */}
             {pendingActionToConfirm &&
               pendingActionToConfirm.missingFields?.length > 0 &&
               Object.keys(pendingActionToConfirm.parameters).length > 1 && (
@@ -1163,7 +1217,6 @@ const ChatPopup = () => {
                 </button>
               )}
 
-            {/* Existing buttons */}
             <button
               onClick={isListening ? stopListening : startListening}
               className={`p-2 rounded-full ${

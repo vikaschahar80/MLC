@@ -37,6 +37,7 @@
   "add_person_clarify_role_prompt_no_name": "नया person जोड़ने के लिए, उनकी role बताएं: student, teacher या admin।",
   "selected_option_user_message": "आपने चुना: {{option}}",
   "action_buttons": {
+    "get":"Get Details",
     "details": "Details",
     "add": "Add",
     "edit": "Edit",

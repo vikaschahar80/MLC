@@ -1,12 +1,53 @@
-# React + Vite
+# Using Ollama Qwen 2.1 Model for Hindi → English Translation via API
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+This guide explains how to integrate the Qwen 2.1 model (via Ollama) to automatically translate Hindi text entered into a chatbot into English.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The setup allows your chatbot to:
 
-## Expanding the ESLint configuration
+-   Detect if the input is in Hindi.
+-   Send the text to Ollama using Qwen for translation.
+-   Return the English-translated text for further chatbot processing.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+### 1. Prerequisites
+
+-   **Ollama installed on your machine:**
+    -   [Download Ollama](https://ollama.com/download)
+-   **Qwen model pulled via Ollama:**
+    ```powershell
+    ollama pull qwen2:1.5b
+    ```
+-   **Backend environment** (Python, Node.js, or other) capable of sending HTTP requests.
+-   **Internet connection** for initial model download.
+
+---
+
+### 2. Allow API Calls from Chatbot
+
+If your chatbot runs on `http://localhost:3000`, you need to allow cross-origin requests in Ollama. Run this command in your terminal *before* starting Ollama.
+
+```powershell
+$env:OLLAMA_ORIGINS="http://localhost:3000"
+---
+
+### 3. Manual Translation Test
+
+You can test the Qwen model's translation capability directly in your terminal:
+
+```powershell
+ollama run qwen2:1.5b
+
+---
+
+### 4. Using Ollama API for Translation
+
+Ollama runs a local API server at `http://localhost:11434` that you can use for programmatic translation.
+
+#### POST Request Example
+
+-   **Endpoint**: `/api/generate`
+-   **Method**: `POST`
+

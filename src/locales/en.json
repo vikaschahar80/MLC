@@ -37,6 +37,7 @@
   "add_person_clarify_role_prompt_no_name": "To add a new person, please specify if they are a student, teacher, or admin.",
   "selected_option_user_message": "Selected option {{option}}",
   "action_buttons": {
+    "get":"Get Details",
     "details": "Details",
     "add": "Add",
     "edit": "Edit",
@@ -100,6 +101,7 @@
   "person_summary": {
     "student": "👤 {{name}} | Role: {{role}} | Class: {{className}},{{section}} | Roll: {{rollNumber}}",
     "teacher": "👤 {{name}} | Role: {{role}} | Subject: {{subject}} | Education: {{education}}",
+    "admin":"👤 {{name}} | Role: {{role}} |  Department: {{department}}",
     "other": "👤 {{name}} | Role: {{role}} | Department: {{department}}"
   },
   "action_results": {
